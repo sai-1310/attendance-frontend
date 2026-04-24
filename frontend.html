@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Attendance System</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    table { margin: auto; border-collapse: collapse; width: 60%; }
+    th, td { padding: 10px; border: 1px solid black; }
+    button { padding: 5px 10px; margin: 2px; }
+    .present { color: green; }
+    .absent { color: red; }
+    
+  </style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <h2>Login</h2>
+  <input id="username" placeholder="Username"><br><br>
+  <input id="password" type="password" placeholder="Password"><br><br>
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;">
+  <h2>Attendance Dashboard</h2>
+
+  <button onclick="logout()">Logout</button>
+
+  <h3>Filter by Date</h3>
+  <input type="date" id="date">
+  <button onclick="loadStudents()">Load</button>
+
+  <h3>Search Student</h3>
+  <input id="searchName">
+  <button onclick="searchStudent()">Search</button>
+
+  <br><br>
+
+  <table id="studentTable"></table>
+  <h3>Attendance Chart</h3>
+<canvas id="chart" width="400" height="200"></canvas>
+
+  <h3 id="summary"></h3>
+</div>
+
+<input id="newStudent" placeholder="New student">
+<button onclick="addStudent()">Add</button>
+
+<script>
+
+const BASE_URL = "https://attendance-backend-7-2s8w.onrender.com";
+
+let students = [];
+
+function getTodayDate() {
+  return new Date().toISOString().split("T")[0];
+}
+
+// LOGIN
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(`${BASE_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    loadStudents();
+  } else {
+    alert("Invalid login");
+  }
+}
+
+// LOGOUT
+function logout() {
+  location.reload();
+}
+
+// MARK attendance
+async function mark(button, status) {
+  const row = button.parentElement.parentElement;
+  const name = row.cells[0].innerText;
+
+  await fetch(`${BASE_URL}/attendance`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, status })
+  });
+
+  loadStudents();
+}
+
+// LOAD DATA
+async function loadStudents() {
+  const table = document.getElementById("studentTable");
+
+  table.innerHTML = `
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+  const date = document.getElementById("date").value || getTodayDate();
+
+  // ✅ get students
+  const resStudents = await fetch(`${BASE_URL}/students`);
+  students = await resStudents.json();
+
+  // ✅ get attendance by date
+  const resAttendance = await fetch(`${BASE_URL}/attendance/${date}`);
+  const data = await resAttendance.json();
+
+  let present = 0;
+  let absent = 0;
+
+  students.forEach(s => {
+    const row = table.insertRow(); // ✅ FIX
+    const name = s.name;
+
+    row.insertCell(0).innerText = name;
+
+    const record = data.find(d => d.name === name);
+
+    if (record) {
+      if (record.status === "Present") {
+        present++;
+        row.insertCell(1).innerHTML = "<span class='present'>Present</span>";
+      } else {
+        absent++;
+        row.insertCell(1).innerHTML = "<span class='absent'>Absent</span>";
+      }
+
+      row.insertCell(2).innerHTML = `
+        <button onclick="editAttendance('${record._id}','Present')">Present</button>
+        <button onclick="editAttendance('${record._id}','Absent')">Absent</button>
+      `;
+    } else {
+      row.insertCell(1).innerHTML = "-";
+
+      row.insertCell(2).innerHTML = `
+        <button onclick="mark(this,'Present')">Present</button>
+        <button onclick="mark(this,'Absent')">Absent</button>
+      `;
+    }
+  });
+
+  document.getElementById("summary").innerText =
+    `Present: ${present} | Absent: ${absent}`;
+
+  updateChart(present, absent);
+}
+
+// SEARCH
+async function searchStudent() {
+  const name = document.getElementById("searchName").value;
+
+  const res = await fetch(`${BASE_URL}/attendance/student/${name}`);
+  const data = await res.json();
+
+  const table = document.getElementById("studentTable");
+
+  table.innerHTML = `
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Date</th>
+    </tr>
+  `;
+
+  data.forEach(item => {
+    const row = table.insertRow();
+    row.insertCell(0).innerText = item.name;
+    row.insertCell(1).innerText = item.status;
+    row.insertCell(2).innerText = new Date(item.date).toLocaleString();
+  });
+}
+
+// ADD STUDENT
+async function addStudent() {
+  const name = document.getElementById("newStudent").value;
+
+  await fetch(`${BASE_URL}/students`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name })
+  });
+
+  loadStudents();
+}
+
+// UPDATE ATTENDANCE
+async function editAttendance(id, status) {
+  await fetch(`${BASE_URL}/attendance/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status })
+  });
+
+  loadStudents();
+}
+
+// CHART
+let chart;
+
+function updateChart(present, absent) {
+  const ctx = document.getElementById("chart").getContext("2d");
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ["Present", "Absent"],
+      datasets: [{
+        data: [present, absent]
+      }]
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>

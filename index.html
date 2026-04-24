@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance System</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="login-container">
+    <h2>Login</h2>
+
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="error"></p>
+</div>
+
+
+<!-- DASHBOARD (HIDDEN INITIALLY) -->
+<div id="dashboard" style="display:none;">
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h2>Attendance System</h2>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+
+        <h3 id="date"></h3>
+        <h3 id="summary">Present: 0 | Absent: 0</h3>
+
+        <!-- ADD STUDENT -->
+        <input type="text" id="newStudent" placeholder="Enter student name">
+        <button onclick="addStudent()">Add Student</button>
+
+        <br><br>
+
+        <!-- DATE -->
+        <label>Select Date:</label>
+        <input type="date" id="historyDate">
+        <button onclick="loadHistory()">View</button>
+        <button onclick="downloadData()">Download</button>
+
+        <br><br>
+
+        <!-- TABLE -->
+        <table id="studentTable">
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+            </tr>
+        </table>
+
+        <br>
+
+        <button onclick="clearAttendance()">Clear All</button>
+
+        <!-- CHART -->
+        <canvas id="chart"></canvas>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
