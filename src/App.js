@@ -112,7 +112,7 @@ function App() {
         fontFamily: "Arial",
       }}
     >
-      <h1>🔥 Attendance System</h1>
+      <h1>test version</h1>
 
       {/* INPUT SECTION */}
       <input
