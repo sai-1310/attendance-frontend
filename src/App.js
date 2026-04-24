@@ -144,7 +144,7 @@ function App() {
         Logout
       </button>
 
-      <h1>🔥 Attendance System</h1>
+      <h1>new ui loaded</h1>
 
       {/* INPUT */}
       <input
