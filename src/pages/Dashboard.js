@@ -1,153 +1,96 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement } from "chart.js";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement);
 
 function Dashboard() {
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+
   const BASE_URL = "https://attendance-backend-7-2s8w.onrender.com";
 
   useEffect(() => {
     fetch(`${BASE_URL}/attendance`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
+      headers: { Authorization: localStorage.getItem("token") }
     })
       .then(res => res.json())
       .then(setData);
   }, []);
 
-  // 📊 Stats
-  const total = data.length;
-  const present = data.filter(d => d.status === "Present").length;
-  const absent = total - present;
+  const filtered = data.filter(d =>
+    d.name?.toLowerCase().includes(search.toLowerCase())
+  );
 
-  // 📊 Pie
-  const pieData = {
-    labels: ["Present", "Absent"],
-    datasets: [
-      {
-        data: [present, absent],
-        backgroundColor: ["#22c55e", "#ef4444"],
-      },
-    ],
+  const perPage = 5;
+  const start = (page - 1) * perPage;
+  const paginated = filtered.slice(start, start + perPage);
+
+  // monthly chart
+  const months = Array(12).fill(0);
+  data.forEach(d => {
+    const m = new Date(d.date).getMonth();
+    if (d.status === "Present") months[m]++;
+  });
+
+  const chartData = {
+    labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    datasets: [{ label: "Present", data: months }]
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display:"flex" }}>
       <Sidebar />
 
-      <div style={main}>
-        <h1 style={{ marginBottom: "20px" }}>Dashboard</h1>
+      <div style={{ marginLeft:"220px", padding:"20px", width:"100%", background:"#0f172a", color:"white" }}>
+        <h1>Dashboard</h1>
 
-        {/* 🔥 CARDS */}
-        <div style={cardContainer}>
-          <Card title="Present" value={present} color="#22c55e" />
-          <Card title="Absent" value={absent} color="#ef4444" />
-          <Card title="Total" value={total} color="#3b82f6" />
-        </div>
+        {/* SEARCH */}
+        <input
+          placeholder="Search..."
+          onChange={e=>setSearch(e.target.value)}
+          style={{ padding:"10px", borderRadius:"6px" }}
+        />
 
-        {/* 📋 TABLE */}
-        <div style={tableBox}>
-          <h3>Attendance Records</h3>
+        {/* TABLE */}
+        <table style={{ width:"100%", marginTop:"20px" }}>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
 
-          <table style={table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Date</th>
+          <tbody>
+            {paginated.map(item => (
+              <tr key={item._id}>
+                <td>{item.name}</td>
+                <td style={{ color: item.status==="Present"?"green":"red" }}>
+                  {item.status}
+                </td>
+                <td>{new Date(item.date).toLocaleDateString()}</td>
               </tr>
-            </thead>
+            ))}
+          </tbody>
+        </table>
 
-            <tbody>
-              {data.map((item) => (
-                <tr key={item._id} style={row}>
-                  <td>{item.name || "No Name"}</td>
-
-                  <td
-                    style={{
-                      color:
-                        item.status === "Present"
-                          ? "#22c55e"
-                          : "#ef4444",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {item.status}
-                  </td>
-
-                  <td>
-                    {new Date(item.date).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* PAGINATION */}
+        <div style={{ marginTop:"10px" }}>
+          <button onClick={()=>setPage(page-1)} disabled={page===1}>Prev</button>
+          <span> {page} </span>
+          <button onClick={()=>setPage(page+1)} disabled={start+perPage>=filtered.length}>Next</button>
         </div>
 
-        {/* 📊 CHART */}
-        <div style={{ width: "300px", marginTop: "30px" }}>
-          <Pie data={pieData} />
+        {/* CHART */}
+        <div style={{ width:"400px", marginTop:"30px" }}>
+          <Bar data={chartData} />
         </div>
       </div>
     </div>
   );
 }
-
-// 🔷 CARD
-const Card = ({ title, value, color }) => (
-  <div
-    style={{
-      background: "rgba(255,255,255,0.05)",
-      backdropFilter: "blur(10px)",
-      padding: "20px",
-      borderRadius: "16px",
-      width: "180px",
-      textAlign: "center",
-      border: `1px solid ${color}`,
-      transition: "0.3s",
-      cursor: "pointer",
-    }}
-    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-  >
-    <h3 style={{ color }}>{title}</h3>
-    <p style={{ fontSize: "20px" }}>{value}</p>
-  </div>
-);
-
-// 🎨 STYLES
-const main = {
-  marginLeft: "220px",
-  padding: "20px",
-  width: "100%",
-  background: "#0f172a",
-  color: "white",
-  minHeight: "100vh",
-};
-
-const cardContainer = {
-  display: "flex",
-  gap: "20px",
-  marginBottom: "20px",
-};
-
-const tableBox = {
-  background: "#1e293b",
-  padding: "20px",
-  borderRadius: "12px",
-};
-
-const table = {
-  width: "100%",
-  borderCollapse: "collapse",
-};
-
-const row = {
-  borderBottom: "1px solid #334155",
-};
 
 export default Dashboard;
