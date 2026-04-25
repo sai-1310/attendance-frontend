@@ -149,7 +149,7 @@ function App() {
     <div style={{ textAlign: "center", marginTop: "40px" }}>
       <button onClick={() => setLoggedIn(false)}>Logout</button>
 
-      <h1>updated dashboard</h1>
+      <h1>new dashbard loaded</h1>
 
       {/* DASHBOARD CARDS */}
       <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
