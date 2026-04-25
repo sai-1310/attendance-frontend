@@ -1,3 +1,6 @@
+const [date, setDate] = useState("");
+
+
 import { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import {
@@ -91,14 +94,14 @@ function App() {
 
   // CHART
   const chartData = {
-    labels: ["Present", "Absent"],
-    datasets: [
-      {
-        data: [present, absent],
-        backgroundColor: ["green", "red"],
-      },
-    ],
-  };
+  labels: ["Present", "Absent"],
+  datasets: [
+    {
+      data: [present, total - present],
+      backgroundColor: ["green", "red"],
+    },
+  ],
+};
 
   // EXPORT CSV
   const exportCSV = () => {
@@ -131,6 +134,30 @@ function App() {
     textAlign: "center",
   });
 
+
+  import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+
+const exportCSV = () => {
+  const rows = [
+    ["Name", "Status"],
+    ...data.map((item) => [item.name, item.status]),
+  ];
+
+  const csv = rows.map((r) => r.join(",")).join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "attendance.csv";
+  a.click();
+};
+<button onClick={exportCSV}>Export to Excel</button>
   // LOGIN UI
   if (!loggedIn) {
     return (
@@ -152,22 +179,22 @@ function App() {
       <h1>new dashbard loaded</h1>
 
       {/* DASHBOARD CARDS */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
-        <div style={card("green")}>
-          <h3>Present</h3>
-          <p>{present}</p>
-        </div>
-        <div style={card("red")}>
-          <h3>Absent</h3>
-          <p>{absent}</p>
-        </div>
-        <div style={card("blue")}>
-          <h3>%</h3>
-          <p>{percentage}%</p>
-        </div>
-      </div>
+      <div style={{ display: "flex", justifyContent: "center", gap: "20px", marginTop: "20px" }}>
+  <div style={{ background: "green", color: "white", padding: "15px", borderRadius: "10px" }}>
+    <h3>Present</h3>
+    <p>{present}</p>
+  </div>
 
-      <br />
+  <div style={{ background: "red", color: "white", padding: "15px", borderRadius: "10px" }}>
+    <h3>Absent</h3>
+    <p>{total - present}</p>
+  </div>
+
+  <div style={{ background: "blue", color: "white", padding: "15px", borderRadius: "10px" }}>
+    <h3>Attendance %</h3>
+    <p>{percentage}%</p>
+  </div>
+</div>
 
       {/* INPUT */}
       <input
@@ -175,6 +202,12 @@ function App() {
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
+
+      <input
+  type="date"
+  value={date}
+  onChange={(e) => setDate(e.target.value)}
+/>
 
       <select onChange={(e) => setStatus(e.target.value)}>
         <option>Present</option>
@@ -235,6 +268,11 @@ function App() {
             <button onClick={() => deleteRecord(item._id)}>❌</button>
           </div>
         ))}
+
+
+        <div style={{ width: "300px", margin: "auto" }}>
+  <Pie data={chartData} />
+</div>
 
       {/* CHART */}
       <div style={{ width: "300px", margin: "auto" }}>
