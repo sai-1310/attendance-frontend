@@ -1,8 +1,3 @@
-
-
-// updated dashboard UI
-
-
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { Pie } from "react-chartjs-2";
@@ -12,7 +7,6 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 function Dashboard() {
   const [data, setData] = useState([]);
-
   const BASE_URL = "https://attendance-backend-7-2s8w.onrender.com";
 
   useEffect(() => {
@@ -25,12 +19,12 @@ function Dashboard() {
       .then(setData);
   }, []);
 
-  // 📊 STATS
+  // 📊 Stats
   const total = data.length;
   const present = data.filter(d => d.status === "Present").length;
   const absent = total - present;
 
-  // 📊 PIE DATA
+  // 📊 Pie
   const pieData = {
     labels: ["Present", "Absent"],
     datasets: [
@@ -45,20 +39,11 @@ function Dashboard() {
     <div style={{ display: "flex" }}>
       <Sidebar />
 
-      <div
-        style={{
-          marginLeft: "220px",
-          padding: "20px",
-          width: "100%",
-          background: "#0f172a",
-          color: "white",
-          minHeight: "100vh",
-        }}
-      >
-        <h1>Dashboard</h1>
+      <div style={main}>
+        <h1 style={{ marginBottom: "20px" }}>Dashboard</h1>
 
         {/* 🔥 CARDS */}
-        <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+        <div style={cardContainer}>
           <Card title="Present" value={present} color="#22c55e" />
           <Card title="Absent" value={absent} color="#ef4444" />
           <Card title="Total" value={total} color="#3b82f6" />
@@ -66,8 +51,9 @@ function Dashboard() {
 
         {/* 📋 TABLE */}
         <div style={tableBox}>
-          <h3>Records</h3>
-          <table style={tableStyle}>
+          <h3>Attendance Records</h3>
+
+          <table style={table}>
             <thead>
               <tr>
                 <th>Name</th>
@@ -77,22 +63,32 @@ function Dashboard() {
             </thead>
 
             <tbody>
-              {data.map(item => (
-                <tr key={item._id}>
+              {data.map((item) => (
+                <tr key={item._id} style={row}>
                   <td>{item.name || "No Name"}</td>
-                  <td style={{
-                    color: item.status === "Present" ? "#22c55e" : "#ef4444"
-                  }}>
+
+                  <td
+                    style={{
+                      color:
+                        item.status === "Present"
+                          ? "#22c55e"
+                          : "#ef4444",
+                      fontWeight: "bold",
+                    }}
+                  >
                     {item.status}
                   </td>
-                  <td>{new Date(item.date).toLocaleDateString()}</td>
+
+                  <td>
+                    {new Date(item.date).toLocaleDateString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* 📊 PIE CHART */}
+        {/* 📊 CHART */}
         <div style={{ width: "300px", marginTop: "30px" }}>
           <Pie data={pieData} />
         </div>
@@ -101,37 +97,57 @@ function Dashboard() {
   );
 }
 
-// 🔷 CARD COMPONENT
+// 🔷 CARD
 const Card = ({ title, value, color }) => (
   <div
     style={{
-      background: color,
+      background: "rgba(255,255,255,0.05)",
+      backdropFilter: "blur(10px)",
       padding: "20px",
-      borderRadius: "12px",
-      width: "150px",
+      borderRadius: "16px",
+      width: "180px",
       textAlign: "center",
+      border: `1px solid ${color}`,
       transition: "0.3s",
       cursor: "pointer",
     }}
     onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
     onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
   >
-    <h3>{title}</h3>
-    <p>{value}</p>
+    <h3 style={{ color }}>{title}</h3>
+    <p style={{ fontSize: "20px" }}>{value}</p>
   </div>
 );
 
 // 🎨 STYLES
-const tableBox = {
-  marginTop: "20px",
-  background: "#1e293b",
+const main = {
+  marginLeft: "220px",
   padding: "20px",
-  borderRadius: "10px",
+  width: "100%",
+  background: "#0f172a",
+  color: "white",
+  minHeight: "100vh",
 };
 
-const tableStyle = {
+const cardContainer = {
+  display: "flex",
+  gap: "20px",
+  marginBottom: "20px",
+};
+
+const tableBox = {
+  background: "#1e293b",
+  padding: "20px",
+  borderRadius: "12px",
+};
+
+const table = {
   width: "100%",
   borderCollapse: "collapse",
+};
+
+const row = {
+  borderBottom: "1px solid #334155",
 };
 
 export default Dashboard;
