@@ -123,7 +123,7 @@ function App() {
         Logout
       </button>
 
-      <h1>🔥 Attendance System</h1>
+      <h1>app edit feature</h1>
 
       {/* INPUT */}
       <input
