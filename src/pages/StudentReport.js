@@ -3,47 +3,29 @@ import Sidebar from "../components/Sidebar";
 
 function StudentReport() {
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState("");
-
   const BASE_URL = "https://attendance-backend-7-2s8w.onrender.com";
 
-  const fetchData = async () => {
-    const res = await fetch(`${BASE_URL}/attendance`, {
+  useEffect(() => {
+    fetch(`${BASE_URL}/attendance`, {
       headers: {
         Authorization: localStorage.getItem("token"),
       },
-    });
-
-    const result = await res.json();
-    setData(result);
-  };
-
-  useEffect(() => {
-    fetchData();
+    })
+      .then(res => res.json())
+      .then(setData);
   }, []);
 
-  const filtered = data.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
-    <div>
+    <div style={{ display: "flex" }}>
       <Sidebar />
 
-      <div style={{ marginLeft: "240px", padding: "20px" }}>
+      <div style={{ marginLeft: "220px", padding: "20px" }}>
         <h1>Student Report</h1>
 
-        <input
-          placeholder="Search student"
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <br /><br />
-
-        {filtered.map((item) => (
-          <div key={item._id}>
+        {data.map(item => (
+          <p key={item._id}>
             {item.name} - {item.status}
-          </div>
+          </p>
         ))}
       </div>
     </div>
