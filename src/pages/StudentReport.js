@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 function StudentReport() {
   const [data, setData] = useState([]);
+
   const BASE_URL = "https://attendance-backend-7-2s8w.onrender.com";
 
   useEffect(() => {
@@ -15,31 +14,24 @@ function StudentReport() {
       .then(setData);
   }, []);
 
-  const exportPDF = async () => {
-    const element = document.getElementById("report");
-    const canvas = await html2canvas(element);
-    const img = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF();
-    pdf.addImage(img, "PNG", 10, 10, 180, 150);
-    pdf.save("report.pdf");
-  };
-
   return (
-    <div style={{ display:"flex" }}>
+    <div style={{ display: "flex" }}>
       <Sidebar />
 
-      <div style={{ marginLeft:"220px", padding:"20px" }}>
+      <div style={{
+        marginLeft: "240px",
+        padding: "30px",
+        width: "100%",
+        background: "#020617",
+        color: "white"
+      }}>
         <h1>Student Report</h1>
 
-        <button onClick={exportPDF}>Export PDF</button>
-        <button onClick={()=>window.print()}>Print</button>
-
-        <div id="report">
-          {data.map(item=>(
-            <p key={item._id}>{item.name} - {item.status}</p>
-          ))}
-        </div>
+        {data.map(item => (
+          <p key={item._id}>
+            {item.name} - {item.status}
+          </p>
+        ))}
       </div>
     </div>
   );

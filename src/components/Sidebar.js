@@ -4,60 +4,36 @@ function Sidebar() {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
 
-  const link = {
-    padding: "10px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    transition: "0.2s"
-  };
-
   return (
-    <div style={{
-      width: "220px",
-      background: "#020617",
-      color: "white",
-      height: "100vh",
-      padding: "20px",
-      position: "fixed"
-    }}>
-      <h2>🚀 Admin Panel</h2>
-
-      <p style={link}
-        onMouseEnter={e=>e.target.style.background="#1e293b"}
-        onMouseLeave={e=>e.target.style.background="transparent"}
-        onClick={()=>navigate("/dashboard")}
-      >
-        📊 Dashboard
-      </p>
-
-      <p style={link}
-        onMouseEnter={e=>e.target.style.background="#1e293b"}
-        onMouseLeave={e=>e.target.style.background="transparent"}
-        onClick={()=>navigate("/report")}
-      >
-        📋 Report
-      </p>
+    <div style={sidebar}>
+      <h2>🚀 Panel</h2>
 
       {role === "admin" && (
-        <p style={link}
-          onMouseEnter={e=>e.target.style.background="#1e293b"}
-          onMouseLeave={e=>e.target.style.background="transparent"}
-          onClick={()=>alert("Admin Settings")}
-        >
-          ⚙ Admin
-        </p>
+        <>
+          <p onClick={() => navigate("/dashboard")}>Dashboard</p>
+          <p onClick={() => navigate("/add")}>Add Attendance</p>
+        </>
       )}
 
-      <p style={link}
-        onClick={()=>{
-          localStorage.clear();
-          navigate("/");
-        }}
-      >
-        🚪 Logout
-      </p>
+      {role === "student" && (
+        <p onClick={() => navigate("/student")}>My Attendance</p>
+      )}
+
+      <p onClick={() => {
+        localStorage.clear();
+        navigate("/");
+      }}>Logout</p>
     </div>
   );
 }
 
 export default Sidebar;
+
+const sidebar = {
+  width: "240px",
+  height: "100vh",
+  position: "fixed",
+  background: "#020617",
+  color: "white",
+  padding: "20px"
+};
