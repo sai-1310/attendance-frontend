@@ -11,7 +11,7 @@ function Profile() {
  useEffect(() => {
   const fetchProfile = async () => {
     try {
-      const res = await fetch("http://https://attendance-backend-8-4eau.onrender.com/profile");
+      const res = await fetch("https://attendance-backend-8-4eau.onrender.com/profile");
 
       if (!res.ok) {
         throw new Error("Server not responding");
