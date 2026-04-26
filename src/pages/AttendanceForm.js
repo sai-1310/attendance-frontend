@@ -1,36 +1,41 @@
 import { useState } from "react";
-import Sidebar from "../components/Sidebar";
 
 function AttendanceForm() {
-  const [data, setData] = useState({});
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState("Present");
 
-  const submit = async () => {
+  const handleSubmit = async () => {
     await fetch("http://localhost:5001/attendance", {
       method: "POST",
       headers: {
-        "Content-Type":"application/json",
-        Authorization: localStorage.getItem("token")
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        name,
+        status,
+        date: new Date()
+      })
     });
 
-    alert("Added");
+    alert("Attendance added ✅");
   };
 
   return (
-    <div style={{display:"flex"}}>
-      <Sidebar />
-      <div style={{marginLeft:"240px",padding:"30px"}}>
-        <h2>Add Attendance</h2>
+    <div style={{ padding: "20px" }}>
+      <h2>Add Attendance</h2>
 
-        <input placeholder="Name" onChange={e=>setData({...data,name:e.target.value})}/>
-        <select onChange={e=>setData({...data,status:e.target.value})}>
-          <option>Present</option>
-          <option>Absent</option>
-        </select>
+      <input
+        placeholder="Student Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
-        <button onClick={submit}>Submit</button>
-      </div>
+      <select onChange={(e) => setStatus(e.target.value)}>
+        <option>Present</option>
+        <option>Absent</option>
+      </select>
+
+      <button onClick={handleSubmit}>Submit</button>
     </div>
   );
 }

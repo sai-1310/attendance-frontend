@@ -8,21 +8,34 @@ function Profile() {
   const [edit, setEdit] = useState(false);
   const [image, setImage] = useState("");
 
-  useEffect(() => {
-    fetch("http://localhost:5000/profile")
-      .then(res => res.json())
-      .then(data => {
-        setUser(data);
-        setImage(data.avatar || "");
-      });
-  }, []);
+ useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const res = await fetch("http://localhost:5001/profile");
+
+      if (!res.ok) {
+        throw new Error("Server not responding");
+      }
+
+      const data = await res.json();
+      setUser(data);
+      setImage(data.avatar || "");
+
+    } catch (err) {
+      console.error("ERROR:", err);
+      alert("Backend connection failed ❌");
+    }
+  };
+
+  fetchProfile();
+}, []);
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   const handleSave = async () => {
-    await fetch("http://localhost:5000/profile", {
+    await fetch("http://localhost:5001/profile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
