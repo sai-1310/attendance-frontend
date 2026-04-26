@@ -5,7 +5,7 @@ function AttendanceForm() {
   const [data, setData] = useState({});
 
   const submit = async () => {
-    await fetch("http://localhost:5000/attendance", {
+    await fetch("http://localhost:5001/attendance", {
       method: "POST",
       headers: {
         "Content-Type":"application/json",

@@ -14,7 +14,7 @@ function Report() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5000/attendance")
+    fetch("http://localhost:5001/attendance")
       .then(res => res.json())
       .then(setData);
   }, []);

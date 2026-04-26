@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";   // ✅ ADDED
 import Sidebar from "../components/Sidebar";
 import ProfileCard from "../components/ProfileCard";
-import ProfileHeader from "../components/ProfileHeader";
+
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -10,22 +11,28 @@ import { FaSearch } from "react-icons/fa";
 function Dashboard() {
   const [raw, setRaw] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
+  const [open, setOpen] = useState(false);   // ✅ ADDED
+
+  const navigate = useNavigate();            // ✅ ADDED
 
   const username = localStorage.getItem("username") || "Admin";
-  const role = localStorage.getItem("role");
+  const role = localStorage.getItem("role") || "admin";
+
+  const avatar =
+    role === "admin"
+      ? "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+      : "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
 
   useEffect(() => {
-    fetch("http://localhost:5000/attendance")
+    fetch("http://localhost:5001/attendance")
       .then(res => res.json())
       .then(setRaw);
   }, []);
 
-  // 📊 STATS
   const total = raw.length;
   const present = raw.filter(r => r.status === "Present").length;
   const absent = total - present;
 
-  // 📈 CHART
   const chartData = raw.map((r, i) => ({
     day: `D${i + 1}`,
     value: r.status === "Present" ? 1 : 0
@@ -34,8 +41,6 @@ function Dashboard() {
   return (
     <div style={styles.wrapper}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-      <ProfileCard />
-      <ProfileHeader />
 
       <div style={styles.main}>
 
@@ -46,11 +51,52 @@ function Dashboard() {
             <input placeholder="Search..." style={styles.searchInput} />
           </div>
 
-          <div style={styles.profile}>
-            <strong>{username}</strong>
-            <span>{role}</span>
+          {/* PROFILE HEADER */}
+          <div style={styles.profileWrapper}>
+
+            <div
+              style={styles.profileHeader}
+              onClick={() => setOpen(!open)}
+            >
+              <img src={avatar} alt="profile" style={styles.image} />
+
+              <div>
+                <span style={{ color: "#aaa" }}>Hi, </span>
+                <strong style={{ color: "#00d1b2" }}>
+                  {username.toUpperCase()}
+                </strong>
+                <div style={styles.role}>{role}</div>
+              </div>
+
+              <span style={styles.online}></span>
+            </div>
+
+            {open && (
+              <div style={styles.dropdown}>
+                <div
+                  style={styles.item}
+                  onClick={() => setOpen(!open)}
+                  onClick={() => navigate("/profile")}
+                  
+                >
+                  👤 Profile
+                </div>
+
+                <div
+                  style={styles.item}
+                  onClick={() => {
+                    localStorage.clear();
+                    navigate("/");
+                  }}
+                  
+                >
+                  🚪 Logout
+                </div>
+              </div>
+            )}
+
           </div>
-        </div>
+        </div> {/* ✅ FIXED (navbar closed properly) */}
 
         {/* CARDS */}
         <div style={styles.cards}>
@@ -88,20 +134,20 @@ function Dashboard() {
           ))}
         </div>
 
+        <ProfileCard />
+
       </div>
     </div>
   );
 }
 
-/* CARD COMPONENT */
+/* CARD */
 function Card({ title, value, color }) {
   return (
-    <div
-      style={{
-        ...styles.card,
-        background: `linear-gradient(135deg, ${color}, #000)`
-      }}
-    >
+    <div style={{
+      ...styles.card,
+      background: `linear-gradient(135deg, ${color}, #000)`
+    }}>
       <h4>{title}</h4>
       <h2>{value}</h2>
     </div>
@@ -127,6 +173,7 @@ const styles = {
   navbar: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: "20px"
   },
 
@@ -146,8 +193,51 @@ const styles = {
     outline: "none"
   },
 
-  profile: {
-    textAlign: "right"
+  profileWrapper: {
+    position: "relative"
+  },
+
+  profileHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    cursor: "pointer"
+  },
+
+  image: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%"
+  },
+
+  role: {
+    fontSize: "12px",
+    color: "#aaa"
+  },
+
+  online: {
+    width: "10px",
+    height: "10px",
+    background: "#00ff88",
+    borderRadius: "50%",
+    position: "absolute",
+    left: "30px",
+    top: "5px"
+  },
+
+  dropdown: {
+    position: "absolute",
+    right: 0,
+    top: "55px",
+    background: "#111",
+    borderRadius: "10px",
+    padding: "10px",
+    minWidth: "150px"
+  },
+
+  item: {
+    padding: "10px",
+    cursor: "pointer"
   },
 
   cards: {
@@ -159,9 +249,7 @@ const styles = {
   card: {
     flex: 1,
     padding: "20px",
-    borderRadius: "15px",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
-    transition: "0.3s"
+    borderRadius: "15px"
   },
 
   box: {

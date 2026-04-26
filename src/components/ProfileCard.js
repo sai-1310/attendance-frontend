@@ -1,121 +1,98 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 function ProfileCard() {
   const [edit, setEdit] = useState(false);
 
   const [user, setUser] = useState({
-    name: "",
-    course: "",
-    roll: "",
-    phone: "",
-    dob: "",
-    email: "",
-    mother: ""
+    name: localStorage.getItem("username") || "Sai Praneeth",
+    role: localStorage.getItem("role") || "Student",
+    course: "BTech - AI",
+    semester: "Semester 8",
+    roll: "2203031240655",
+    phone: "7061717297",
+    email: "saipraneeth@gmail.com",
+    dob: "13-10-2004",
+    section: "AI-A",
+    batch: "2022 - 2026"
   });
 
-  // 🔹 Load from localStorage (dynamic)
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("profile"));
-    if (saved) setUser(saved);
-    else {
-      setUser({
-        name: localStorage.getItem("username") || "Student",
-        course: "BTech - AI (Sem 8)",
-        roll: "2203031240655",
-        phone: "9999999999",
-        dob: "13-10-2004",
-        email: "demo@gmail.com",
-        mother: "Mother Name"
-      });
-    }
-  }, []);
-
-  // 🔹 Handle change
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  // 🔹 Save
-  const handleSave = () => {
-    localStorage.setItem("profile", JSON.stringify(user));
-    setEdit(false);
-  };
-
   return (
     <div style={styles.container}>
-      
-      <img
-        src="https://randomuser.me/api/portraits/men/75.jpg"
-        alt="profile"
-        style={styles.image}
-      />
 
-      {edit ? (
-        <input
-          name="name"
-          value={user.name}
-          onChange={handleChange}
-          style={styles.input}
+      {/* LEFT SIDE */}
+      <div style={styles.left}>
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+          alt="profile"
+          style={styles.image}
         />
-      ) : (
-        <h2 style={styles.name}>{user.name}</h2>
-      )}
 
-      <span style={styles.status}>Active</span>
+        <h2>{user.name}</h2>
+        <p style={styles.role}>{user.role}</p>
 
-      <div style={styles.details}>
-        {renderField("course", "Course", user, edit, handleChange)}
-        {renderField("roll", "Roll No", user, edit, handleChange)}
-        {renderField("phone", "Phone", user, edit, handleChange)}
-        {renderField("dob", "DOB", user, edit, handleChange)}
-        {renderField("email", "Email", user, edit, handleChange)}
-        {renderField("mother", "Mother", user, edit, handleChange)}
+        <span style={styles.active}>Active</span>
+
+        <div style={styles.infoBox}>
+          <p>{user.course}</p>
+          <p>{user.semester}</p>
+          <p>{user.batch}</p>
+        </div>
+
+        <button onClick={() => setEdit(!edit)} style={styles.btn}>
+          {edit ? "Save" : "Edit Profile"}
+        </button>
       </div>
 
-      {/* BUTTONS */}
-      <div style={{ marginTop: "15px" }}>
-        {edit ? (
-          <button onClick={handleSave} style={styles.btnSave}>
-            Save
-          </button>
-        ) : (
-          <button onClick={() => setEdit(true)} style={styles.btnEdit}>
-            Edit
-          </button>
-        )}
+      {/* RIGHT SIDE */}
+      <div style={styles.right}>
+        <h2 style={styles.heading}>Student Details</h2>
+
+        {Object.entries(user).map(([key, value]) => (
+          key !== "name" &&
+          key !== "role" && (
+            <div key={key} style={styles.row}>
+              <span style={styles.label}>{key.toUpperCase()}</span>
+
+              {edit ? (
+                <input
+                  name={key}
+                  value={value}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              ) : (
+                <span style={styles.value}>{value}</span>
+              )}
+            </div>
+          )
+        ))}
       </div>
 
     </div>
   );
 }
 
-// 🔹 Reusable Field
-function renderField(name, label, user, edit, handleChange) {
-  return (
-    <p>
-      <b>{label} :</b>{" "}
-      {edit ? (
-        <input
-          name={name}
-          value={user[name]}
-          onChange={handleChange}
-          style={styles.input}
-        />
-      ) : (
-        user[name]
-      )}
-    </p>
-  );
-}
-
 const styles = {
   container: {
-    width: "320px",
+    display: "flex",
+    width: "100%",
+    minHeight: "400px",
+    gap: "20px",
+    marginTop: "20px"
+  },
+
+  /* LEFT PANEL */
+  left: {
+    width: "280px",
+    background: "#0f172a",
     padding: "20px",
-    background: "#fff",
-    borderRadius: "12px",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-    textAlign: "center"
+    borderRadius: "15px",
+    textAlign: "center",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
   },
 
   image: {
@@ -125,46 +102,72 @@ const styles = {
     marginBottom: "10px"
   },
 
-  name: {
-    color: "#4a6fa5"
+  role: {
+    color: "#aaa",
+    marginBottom: "5px"
   },
 
-  status: {
-    background: "#2ecc71",
-    color: "#fff",
-    padding: "3px 10px",
-    borderRadius: "5px",
-    fontSize: "12px"
+  active: {
+    background: "#00c853",
+    padding: "5px 12px",
+    borderRadius: "10px",
+    fontSize: "12px",
+    display: "inline-block",
+    marginBottom: "10px"
   },
 
-  details: {
-    textAlign: "left",
+  infoBox: {
     marginTop: "10px",
-    lineHeight: "1.8"
+    fontSize: "14px",
+    color: "#ccc"
+  },
+
+  btn: {
+    marginTop: "20px",
+    padding: "10px",
+    width: "100%",
+    background: "#3b82f6",
+    border: "none",
+    borderRadius: "8px",
+    color: "white",
+    cursor: "pointer"
+  },
+
+  /* RIGHT PANEL */
+  right: {
+    flex: 1,
+    background: "#020617",
+    padding: "20px",
+    borderRadius: "15px",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
+  },
+
+  heading: {
+    marginBottom: "15px"
+  },
+
+  row: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "12px 0",
+    borderBottom: "1px solid rgba(255,255,255,0.1)"
+  },
+
+  label: {
+    color: "#888",
+    fontWeight: "bold"
+  },
+
+  value: {
+    color: "white"
   },
 
   input: {
-    padding: "4px",
-    width: "100%",
-    marginTop: "4px"
-  },
-
-  btnEdit: {
-    background: "#3498db",
-    color: "#fff",
-    padding: "8px 15px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer"
-  },
-
-  btnSave: {
-    background: "#2ecc71",
-    color: "#fff",
-    padding: "8px 15px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer"
+    background: "#0f172a",
+    border: "1px solid #333",
+    color: "white",
+    padding: "5px",
+    borderRadius: "5px"
   }
 };
 

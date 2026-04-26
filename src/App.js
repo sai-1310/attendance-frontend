@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import Report from "./pages/Report";
+import Profile from "./pages/Profile";
 import PrivateRoute from "./utils/PrivateRoute";
 
 function App() {
@@ -31,6 +32,8 @@ function App() {
           }
         />
 
+<Route path="/profile" element={<Profile />} />
+<Route path="/profile" element={<Profile />} />
         <Route
           path="/report"
           element={

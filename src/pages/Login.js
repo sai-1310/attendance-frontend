@@ -14,7 +14,7 @@ function Login() {
 
   const login = async () => {
     try {
-      const res = await fetch("http://localhost:5000/login", {
+      const res = await fetch("http://localhost:5001/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
@@ -25,6 +25,8 @@ function Login() {
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.role);
+        localStorage.setItem("username", user.username);
+localStorage.setItem("role", data.role);
         navigate(data.role === "admin" ? "/dashboard" : "/student");
       } else {
         alert("Invalid credentials");
