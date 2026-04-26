@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";   // ✅ ADDED
 import Sidebar from "../components/Sidebar";
 import ProfileCard from "../components/ProfileCard";
-import Report from "./pages/report";
+import Report from "./pages/Report";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from "recharts";
