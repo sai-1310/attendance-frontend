@@ -20,7 +20,7 @@ function Report() {
         ⬅ Back
       </button>
 
-      <h1>attendance report</h1>
+      <h1>Attendance Report 🚀</h1>
 
       <div style={styles.box}>
         <div style={styles.header}>
