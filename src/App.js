@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import StudentDashboard from "./pages/StudentDashboard";
-import AttendanceForm from "./pages/AttendanceForm";
-import PrivateRoute from "./components/PrivateRoute";
+import Report from "./pages/Report"; // ✅ CORRECT PLACE
+import PrivateRoute from "./utils/PrivateRoute";
 
 function App() {
   return (
@@ -12,23 +13,32 @@ function App() {
 
         <Route path="/" element={<Login />} />
 
-        <Route path="/dashboard" element={
-          <PrivateRoute role="admin">
-            <Dashboard />
-          </PrivateRoute>
-        }/>
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute role="admin">
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
 
-        <Route path="/student" element={
-          <PrivateRoute role="student">
-            <StudentDashboard />
-          </PrivateRoute>
-        }/>
+        <Route
+          path="/report"
+          element={
+            <PrivateRoute role="admin">
+              <Report />
+            </PrivateRoute>
+          }
+        />
 
-        <Route path="/add" element={
-          <PrivateRoute role="admin">
-            <AttendanceForm />
-          </PrivateRoute>
-        }/>
+        <Route
+          path="/student"
+          element={
+            <PrivateRoute role="student">
+              <StudentDashboard />
+            </PrivateRoute>
+          }
+        />
 
       </Routes>
     </BrowserRouter>

@@ -37,4 +37,4 @@ function StudentReport() {
   );
 }
 
-export default StudentReport;
+export default StudentDashboard;
