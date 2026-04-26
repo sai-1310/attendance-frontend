@@ -1,79 +1,170 @@
-import React from "react";
+import { useState, useEffect } from "react";
 
 function ProfileCard() {
+  const [edit, setEdit] = useState(false);
+
+  const [user, setUser] = useState({
+    name: "",
+    course: "",
+    roll: "",
+    phone: "",
+    dob: "",
+    email: "",
+    mother: ""
+  });
+
+  // 🔹 Load from localStorage (dynamic)
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("profile"));
+    if (saved) setUser(saved);
+    else {
+      setUser({
+        name: localStorage.getItem("username") || "Student",
+        course: "BTech - AI (Sem 8)",
+        roll: "2203031240655",
+        phone: "9999999999",
+        dob: "13-10-2004",
+        email: "demo@gmail.com",
+        mother: "Mother Name"
+      });
+    }
+  }, []);
+
+  // 🔹 Handle change
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  // 🔹 Save
+  const handleSave = () => {
+    localStorage.setItem("profile", JSON.stringify(user));
+    setEdit(false);
+  };
+
   return (
     <div style={styles.container}>
       
-      {/* PROFILE IMAGE */}
       <img
         src="https://randomuser.me/api/portraits/men/75.jpg"
         alt="profile"
         style={styles.image}
       />
 
-      {/* NAME */}
-      <h2 style={styles.name}>KOPPURAVURI SAI PRANEETH</h2>
+      {edit ? (
+        <input
+          name="name"
+          value={user.name}
+          onChange={handleChange}
+          style={styles.input}
+        />
+      ) : (
+        <h2 style={styles.name}>{user.name}</h2>
+      )}
 
-      {/* STATUS */}
       <span style={styles.status}>Active</span>
 
-      {/* DETAILS */}
       <div style={styles.details}>
-        <p><b>Course :</b> BTech - AI (Semester - 8)</p>
-        <p><b>Roll No :</b> 2203031240655</p>
-        <p><b>Phone :</b> 706171729277</p>
-        <p><b>Section :</b> CSE-AI-8A18 | 2 | 40</p>
-        <p><b>DOB :</b> 13-10-2004</p>
-        <p><b>Student ID :</b> 6302723308</p>
-        <p><b>Mother :</b> Koppuravuri Nagamani</p>
-        <p><b>Email :</b> saipraneeth@example.com</p>
+        {renderField("course", "Course", user, edit, handleChange)}
+        {renderField("roll", "Roll No", user, edit, handleChange)}
+        {renderField("phone", "Phone", user, edit, handleChange)}
+        {renderField("dob", "DOB", user, edit, handleChange)}
+        {renderField("email", "Email", user, edit, handleChange)}
+        {renderField("mother", "Mother", user, edit, handleChange)}
+      </div>
+
+      {/* BUTTONS */}
+      <div style={{ marginTop: "15px" }}>
+        {edit ? (
+          <button onClick={handleSave} style={styles.btnSave}>
+            Save
+          </button>
+        ) : (
+          <button onClick={() => setEdit(true)} style={styles.btnEdit}>
+            Edit
+          </button>
+        )}
       </div>
 
     </div>
   );
 }
 
+// 🔹 Reusable Field
+function renderField(name, label, user, edit, handleChange) {
+  return (
+    <p>
+      <b>{label} :</b>{" "}
+      {edit ? (
+        <input
+          name={name}
+          value={user[name]}
+          onChange={handleChange}
+          style={styles.input}
+        />
+      ) : (
+        user[name]
+      )}
+    </p>
+  );
+}
+
 const styles = {
   container: {
     width: "320px",
-    margin: "20px auto",
     padding: "20px",
-    background: "#ffffff",
+    background: "#fff",
     borderRadius: "12px",
-    textAlign: "center",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.1)"
+    boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+    textAlign: "center"
   },
 
   image: {
-    width: "140px",
-    height: "140px",
+    width: "120px",
+    height: "120px",
     borderRadius: "50%",
-    objectFit: "cover",
-    marginBottom: "15px"
-  },
-
-  name: {
-    fontSize: "18px",
-    color: "#4a6fa5",
     marginBottom: "10px"
   },
 
+  name: {
+    color: "#4a6fa5"
+  },
+
   status: {
-    display: "inline-block",
     background: "#2ecc71",
-    color: "white",
-    padding: "4px 10px",
+    color: "#fff",
+    padding: "3px 10px",
     borderRadius: "5px",
-    fontSize: "12px",
-    marginBottom: "15px"
+    fontSize: "12px"
   },
 
   details: {
     textAlign: "left",
-    fontSize: "14px",
-    lineHeight: "1.8",
-    borderTop: "1px solid #eee",
-    paddingTop: "10px"
+    marginTop: "10px",
+    lineHeight: "1.8"
+  },
+
+  input: {
+    padding: "4px",
+    width: "100%",
+    marginTop: "4px"
+  },
+
+  btnEdit: {
+    background: "#3498db",
+    color: "#fff",
+    padding: "8px 15px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  },
+
+  btnSave: {
+    background: "#2ecc71",
+    color: "#fff",
+    padding: "8px 15px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
   }
 };
 

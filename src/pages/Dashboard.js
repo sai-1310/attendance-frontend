@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import ProfileCard from "../components/ProfileCard";
+import ProfileHeader from "../components/ProfileHeader";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -34,6 +35,7 @@ function Dashboard() {
     <div style={styles.wrapper}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <ProfileCard />
+      <ProfileHeader />
 
       <div style={styles.main}>
 
