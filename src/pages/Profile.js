@@ -11,7 +11,7 @@ function Profile() {
  useEffect(() => {
   const fetchProfile = async () => {
     try {
-      const res = await fetch("http://localhost:5001/profile");
+      const res = await fetch("http://https://attendance-backend-8-4eau.onrender.com/profile");
 
       if (!res.ok) {
         throw new Error("Server not responding");
@@ -35,7 +35,7 @@ function Profile() {
   };
 
   const handleSave = async () => {
-    await fetch("http://localhost:5001/profile", {
+    await fetch("http://https://attendance-backend-8-4eau.onrender.com/profile", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

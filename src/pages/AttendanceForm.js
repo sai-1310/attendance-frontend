@@ -5,7 +5,7 @@ function AttendanceForm() {
   const [status, setStatus] = useState("Present");
 
   const handleSubmit = async () => {
-    await fetch("http://localhost:5001/attendance", {
+    await fetch("http://https://attendance-backend-8-4eau.onrender.com/attendance", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

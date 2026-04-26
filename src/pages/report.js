@@ -14,7 +14,7 @@ function Report() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5001/attendance")
+    fetch("http://https://attendance-backend-8-4eau.onrender.com/attendance")
       .then(res => res.json())
       .then(setData);
   }, []);

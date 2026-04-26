@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";   // ✅ ADDED
 import Sidebar from "../components/Sidebar";
 import ProfileCard from "../components/ProfileCard";
-
+import Report from "./pages/report";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -24,7 +24,7 @@ function Dashboard() {
       : "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
 
   useEffect(() => {
-    fetch("http://localhost:5001/attendance")
+    fetch("http://https://attendance-backend-8-4eau.onrender.com/attendance")
       .then(res => res.json())
       .then(setRaw);
   }, []);
