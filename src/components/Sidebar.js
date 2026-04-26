@@ -1,39 +1,46 @@
+import { FaBars, FaChartBar, FaFileAlt, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ collapsed, setCollapsed }) {
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
 
   return (
-    <div style={sidebar}>
-      <h2>🚀 Panel</h2>
+    <div style={{
+      width: collapsed ? "70px" : "220px",
+      padding: "20px",
+      background: "#020617",
+      borderRight: "1px solid rgba(255,255,255,0.1)"
+    }}>
+      <FaBars onClick={() => setCollapsed(!collapsed)} style={{ cursor: "pointer" }} />
 
-      {role === "admin" && (
-        <>
-          <p onClick={() => navigate("/dashboard")}>Dashboard</p>
-          <p onClick={() => navigate("/add")}>Add Attendance</p>
-        </>
-      )}
+      <div style={styles.item} onClick={() => navigate("/dashboard")}>
+        <FaChartBar /> {!collapsed && "Dashboard"}
+      </div>
 
-      {role === "student" && (
-        <p onClick={() => navigate("/student")}>My Attendance</p>
-      )}
+      <div style={styles.item} onClick={() => navigate("/report")}>
+        <FaFileAlt /> {!collapsed && "Report"}
+      </div>
 
-      <p onClick={() => {
-        localStorage.clear();
-        navigate("/");
-      }}>Logout</p>
+      <div
+        style={styles.item}
+        onClick={() => {
+          localStorage.clear();
+          navigate("/");
+        }}
+      >
+        <FaSignOutAlt /> {!collapsed && "Logout"}
+      </div>
     </div>
   );
 }
 
-export default Sidebar;
-
-const sidebar = {
-  width: "240px",
-  height: "100vh",
-  position: "fixed",
-  background: "#020617",
-  color: "white",
-  padding: "20px"
+const styles = {
+  item: {
+    marginTop: "20px",
+    cursor: "pointer",
+    display: "flex",
+    gap: "10px"
+  }
 };
+
+export default Sidebar;

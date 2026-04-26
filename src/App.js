@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import StudentDashboard from "./pages/StudentDashboard";
-import Report from "./pages/Report"; // ✅ CORRECT PLACE
+import Report from "./pages/Report";
 import PrivateRoute from "./utils/PrivateRoute";
 
 function App() {
@@ -23,19 +23,19 @@ function App() {
         />
 
         <Route
-          path="/report"
+          path="/student"
           element={
-            <PrivateRoute role="admin">
-              <Report />
+            <PrivateRoute role="student">
+              <StudentDashboard />
             </PrivateRoute>
           }
         />
 
         <Route
-          path="/student"
+          path="/report"
           element={
-            <PrivateRoute role="student">
-              <StudentDashboard />
+            <PrivateRoute role="admin">
+              <Report />
             </PrivateRoute>
           }
         />
