@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";   // ✅ ADDED
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import ProfileCard from "../components/ProfileCard";
-import Report from "./pages/Report";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -11,9 +10,9 @@ import { FaSearch } from "react-icons/fa";
 function Dashboard() {
   const [raw, setRaw] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
-  const [open, setOpen] = useState(false);   // ✅ ADDED
+  const [open, setOpen] = useState(false);
 
-  const navigate = useNavigate();            // ✅ ADDED
+  const navigate = useNavigate();
 
   const username = localStorage.getItem("username") || "Admin";
   const role = localStorage.getItem("role") || "admin";
@@ -24,15 +23,18 @@ function Dashboard() {
       : "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
 
   useEffect(() => {
-    fetch("http://https://attendance-backend-8-4eau.onrender.com/attendance")
+    fetch("https://attendance-backend-8-4eau.onrender.com/attendance")
       .then(res => res.json())
-      .then(setRaw);
+      .then(setRaw)
+      .catch(err => console.error(err));
   }, []);
 
+  // 📊 STATS
   const total = raw.length;
   const present = raw.filter(r => r.status === "Present").length;
   const absent = total - present;
 
+  // 📈 CHART
   const chartData = raw.map((r, i) => ({
     day: `D${i + 1}`,
     value: r.status === "Present" ? 1 : 0
@@ -73,11 +75,13 @@ function Dashboard() {
 
             {open && (
               <div style={styles.dropdown}>
+
                 <div
                   style={styles.item}
-                  onClick={() => setOpen(!open)}
-                  onClick={() => navigate("/profile")}
-                  
+                  onClick={() => {
+                    setOpen(false);
+                    navigate("/profile");
+                  }}
                 >
                   👤 Profile
                 </div>
@@ -88,15 +92,15 @@ function Dashboard() {
                     localStorage.clear();
                     navigate("/");
                   }}
-                  
                 >
                   🚪 Logout
                 </div>
+
               </div>
             )}
 
           </div>
-        </div> {/* ✅ FIXED (navbar closed properly) */}
+        </div>
 
         {/* CARDS */}
         <div style={styles.cards}>
@@ -124,16 +128,19 @@ function Dashboard() {
           {raw.slice(0, 5).map(item => (
             <div key={item._id} style={styles.row}>
               <span>{item.name}</span>
+
               <span style={{
                 color: item.status === "Present" ? "#00e676" : "#ff5252"
               }}>
                 {item.status}
               </span>
+
               <span>{new Date(item.date).toLocaleDateString()}</span>
             </div>
           ))}
         </div>
 
+        {/* PROFILE CARD */}
         <ProfileCard />
 
       </div>
